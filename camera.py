@@ -32,6 +32,10 @@ def camera_snapshot():
     subprocess.call("libcamera-jpeg -o {}".format(filename), shell=True) # Shell Script(libcamera)
     fileUpload(filename)
 
-print("Start")
-camera_snapshot()
-print("End")
+def main():
+    print("Start")
+    camera_snapshot()
+    print("End")
+
+if __name__ == "__main__":
+    main()
