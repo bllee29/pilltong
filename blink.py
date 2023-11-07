@@ -1,5 +1,5 @@
 import ctypes
 
-a = ctypes.CDLL("./liba.so")
+a = ctypes.CDLL("./blink.so")
 blink = a.blink
 blink()
