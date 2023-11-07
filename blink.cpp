@@ -5,7 +5,7 @@
 using namespace std;
 
 #define LED1 17
-#define MOTOR 12
+#define MOTOR 18
 
 extern "C"
 {
@@ -25,24 +25,17 @@ extern "C"
     }
 
     int servo() {
-        char sel;
-
-        if (wiringPiSetup() == -1)
-            return 1;
-
+        wiringPiSetupGpio();
+        pinMode(MOTOR, OUTPUT);
         softPwmCreate(MOTOR, 0, 200);
-
-        while (1)
-        {
-            fputs("select c, r, l, q: ", stdout);
-            scanf("%c", &sel);
-            getchar();
-            if (sel == 'c') softPwmWrite(MOTOR, 15);   // 0 degree
-            else if (sel == 'r') softPwmWrite(MOTOR, 24); // 90 degree
-            else if (sel == 'l') softPwmWrite(MOTOR, 5); // -90 degree
-            else if (sel == 'q') return 0;
+        for (;;) {
+            softPwmWrite(MOTOR, 10);
+            delay(500);
+            softPwmWrite(MOTOR, 15);
+            delay(500);
+            softPwmWrite(MOTOR, 20);
+            delay(500);
         }
-
         return 0;
     }
 }
