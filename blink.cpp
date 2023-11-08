@@ -18,23 +18,40 @@ extern "C"
 
         while (true) {
             digitalWrite(LED1, HIGH);
-            delay(500);
+            delay(10000);
             digitalWrite(LED1, LOW);
             delay(500);
         }
     }
 
+    int LEDON() {
+        if (wiringPiSetupGpio() < 0) {
+            cout << "Unable to setup wiring pi";
+            return 1;
+        }
+        pinMode(LED1, OUTPUT);
+        digitalWrite(LED1, HIGH);
+    }
+
+    int LEDOFF() {
+        if (wiringPiSetupGpio() < 0) {
+            cout << "Unable to setup wiring pi";
+            return 1;
+        }
+        pinMode(LED1, OUTPUT);
+        digitalWrite(LED1, LOW);
+    }        
+
     int servo() {
+        int sel = 1;
         wiringPiSetupGpio();
         pinMode(MOTOR, OUTPUT);
         softPwmCreate(MOTOR, 0, 200);
-        for (;;) {
-            softPwmWrite(MOTOR, 10);
-            delay(500);
-            softPwmWrite(MOTOR, 15);
-            delay(500);
-            softPwmWrite(MOTOR, 20);
-            delay(500);
+        while(sel != 0) {
+            cin << sel
+            softPwmWrite(MOTOR, 13);    // approximately 15 degree rotate
+            delay(170);
+            softPwmWrite(MOTOR, 14);    // stop
         }
         return 0;
     }

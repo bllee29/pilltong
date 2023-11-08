@@ -5,14 +5,23 @@ from firebase_admin import storage
 from uuid import uuid4
 import subprocess # Shell Script
 
+import ctypes
+
 # 프로젝트 id
-PROJECT_ID = "pilltong-9b8cd" 
+PROJECT_ID = "pilltong-9b8cd"
+RTDATABASE = "https://pilltong-9b8cd-default-rtdb.firebaseio.com"
+
+raspi = ctypes.CDLL("./blink.so")
+ledon = raspi.LEDON
+ledoff = raspi.LEDOFF
+
 
 # firebase에 연동하기 위한 Key의 디렉토리
 cred = credentials.Certificate("./Key/serviceKey.json") 
 
 default_app = firebase_admin.initialize_app(cred, {
-    'storageBucket': f"{PROJECT_ID}.appspot.com"
+    'databaseURL' : f'{RTDATABASE}',
+    'storageBucket': f'{PROJECT_ID}.appspot.com'
 })
 bucket = storage.bucket()
 
@@ -34,7 +43,9 @@ def camera_snapshot():
 
 def main():
     print("Start")
+    ledon()
     camera_snapshot()
+    ledoff()
     print("End")
 
 if __name__ == "__main__":
