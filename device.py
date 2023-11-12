@@ -1,39 +1,28 @@
-import subprocess
 import datetime
-from firebase_admin import db
-import subprocess # Shell Script
-
+import subprocess
 import ctypes
 
-a = ctypes.CDLL("./blink.so")
-userInput = a.input
+# use absolute path for using in /etc/rc.local
+dev = ctypes.CDLL("./home/pilltong/pilltong/device.so")
 
 def modeSelect() -> int:
-    return userInput()
+    return dev.userInput()
 
-def camera_snapshot(UID: str) -> str:
-    subtitle = f"camera_image/{UID}" # Directory/UID
-    suffix = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + '.jpeg' # 현재시간
-    filename = "_".join([subtitle, suffix]) # '_' 기준으로 합침
-    subprocess.call("libcamera-jpeg -o {}".format(filename), shell=True) # Shell Script(libcamera)
+def camera_snapshot(UID: str, bright: int) -> str:
+    dev.LEDON(bright);
+    prefix = f"device_image/{UID}/FindPill"
+    suffix = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + '.jpeg'
+    filename = "_".join([prefix, suffix])
+    subprocess.call("libcamera-jpeg -o {}".format(filename), shell=True)
     return filename
 
-def endProc(fileName: str):
-    subprocess.call("libcamera-jpeg -o {}".format(filename), shell=True)
+def endProc():
+    subprocess.call("sudo shutdown now {}", shell=True)
 
 
-# users_ref.set({
-#     'alanisawesome': {
-#         'date_of_birth': 'June 23, 1912',
-#         'full_name': 'Alan Turing'
-#     },
-#     'gracehop': {
-#         'date_of_birth': 'December 9, 1906',
-#         'full_name': 'Grace Hopper'
-#     }
-# })
+def main():
+    UID = '8084fca6-b5e0-4a46-b395-4874104142cb'
+    print(camera_snapshot(UID))
 
-# hopper_ref = users_ref.child('gracehop')
-# hopper_ref.update({
-#     'nickname': 'Amazing Grace'
-# })
+if __name__ == "__main__":
+    main()    
