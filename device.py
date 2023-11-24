@@ -8,7 +8,7 @@ def setting() -> str:
     return config
 
 # use absolute path for using in /etc/rc.local
-dev = ctypes.CDLL("./home/pilltong/pilltong/device.so")
+dev = ctypes.CDLL("/home/pilltong/pilltong/device.so")
 config = setting()
 
 def modeSelect() -> int:

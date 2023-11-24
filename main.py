@@ -25,7 +25,7 @@ firebase_admin.initialize_app(cred,{
 })
 bucket = storage.bucket()
 
-END = 0;
+END = 0;s
 CAMERA = 1
 ROTATECAMERA = 2
 TEST = 22
