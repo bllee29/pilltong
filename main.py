@@ -6,8 +6,8 @@ from firebase_admin import credentials
 from firebase_admin import storage
 
 # import camera
-from device import *
-import device as dev
+from dev import *
+import dev
 from upload import *
 
 import datetime
@@ -25,7 +25,7 @@ firebase_admin.initialize_app(cred,{
 })
 bucket = storage.bucket()
 
-END = 0;s
+END = 0
 CAMERA = 1
 ROTATECAMERA = 2
 TEST = 22
@@ -36,6 +36,7 @@ def main():
     # loop
     while(True):
         MODE = modeSelect()
+        print(MODE)
 
         if(MODE == END):
             print("end")
@@ -63,12 +64,12 @@ def main():
                 RTUpload(filename, UID, bucket, i)
 
         if(MODE == ROTATECAMERA): 
-            suffix = "t" + datetime.datetime.now().strftime("%Y%m%d_%H%M")
             for i in range(10):
                 print(f"picture{i}")
-                filename = camera_snapshot(UID, suffix, 300)
+                suffix = "t" + datetime.datetime.now().strftime(f"%Y%m%d_%H%M{i}")
+                filename = camera_snapshot(UID, suffix, i)
                 turn()
-                storageUpload(filename, UID, bucket)
+                storageUpload(filename, bucket)
                 RTUpload(filename, UID, bucket, i)
 
         if(MODE == TEST):
