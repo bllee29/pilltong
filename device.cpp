@@ -37,7 +37,7 @@ extern "C"
             return 1;
         }
         pinMode(LEDANALOG, PWM_OUTPUT);
-        digitalWrite(LED1, bright);
+        digitalWrite(LEDANALOG, bright);
         return 0;
     }
 
@@ -47,8 +47,8 @@ extern "C"
             cout << "Unable to setup wiring pi";
             return 1;
         }
-        pinMode(LED1, OUTPUT);
-        digitalWrite(LED1, LOW);
+        pinMode(LEDANALOG, OUTPUT);
+        digitalWrite(LEDANALOG, LOW);
         return 0;
     }
 
@@ -74,11 +74,11 @@ extern "C"
         int sel = 1;
         wiringPiSetupGpio();
 
-        pinMode(ANALOG, PWM_OUTPUT);
+        pinMode(LEDANALOG, PWM_OUTPUT);
 
         while (sel != 0) {
             cin >> sel;
-            pwmWrite(ANALOG, sel);
+            pwmWrite(LEDANALOG, sel);
         }
         return 0;
     }
@@ -104,13 +104,13 @@ extern "C"
     int servo() {
         int sel = 1;
         wiringPiSetupGpio();
-        pinMode(ANALOG, OUTPUT);
-        softPwmCreate(ANALOG, 0, 200);
+        pinMode(LEDANALOG, OUTPUT);
+        softPwmCreate(LEDANALOG, 0, 200);
         while (sel != 0) {
             cin >> sel;
-            softPwmWrite(ANALOG, 13);    // approximately 15 degree rotate
+            softPwmWrite(LEDANALOG, 13);    // approximately 15 degree rotate
             delay(170);
-            softPwmWrite(ANALOG, 14);    // stop
+            softPwmWrite(LEDANALOG, 14);    // stop
         }
         return 0;
     }            
