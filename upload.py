@@ -49,11 +49,11 @@ def main():
     blob = bucket.blob(fileName)
     blob.make_public()
     print("Start")
-    RTUpload(fileName, UID, bucket)
+    RTUpload(fileName, UID, bucket, 1)
+    RTUpload(fileName, UID, bucket, 2)
+    RTUpload(fileName, UID, bucket, 3)
+    RTUpload(fileName, UID, bucket, 4)
     print("End")
-    # ref = db.reference(f'/requests/{UID}/images')
-    # print(type(ref.get()))
-    # print(type(ref.get().items()))
     
     
 

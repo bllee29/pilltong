@@ -53,6 +53,7 @@ extern "C"
     }
 
     int turn() {
+        //sg-90 360 degree servo motor
         wiringPiSetupGpio();
         pinMode(SERVO, OUTPUT);
         softPwmCreate(SERVO, 0, 200);
