@@ -1,16 +1,23 @@
 import subprocess
 import ctypes
+import datetime
 
 dev = ctypes.CDLL("/home/pilltong/pilltong/device.so")
 
 def main():
     while(True):
         t = input()
+        suffix = datetime.datetime.now().strftime("_%Y%m%d_%H%M")
         for i in range(1, 6):
-            camera_snapshot(t, i * 100)
+            camera_snapshot(t, suffix, i * 100)
 
 
-def camera_snapshot(prefix: str, bright: int):
+def camera_snapshot(prefix: str, suffix: str, bright: int):
     dev.LEDON(bright)
-    subprocess.call("libcamera-jpeg -o {}".format(prefix), shell=True)
-    print(f'{prefix} has captured')
+    suffix = str(bright) + suffix + ".jpeg"
+    filename = "".join([prefix, suffix])
+    subprocess.call("libcamera-jpeg -o {}".format(filename), shell=True)
+    print(f'{filename} has captured')
+
+if __name__ == "__main__":
+    main()
