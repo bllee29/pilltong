@@ -1,4 +1,3 @@
-
 # import firebase sdk
 import firebase_admin
 from firebase_admin import db
@@ -49,19 +48,21 @@ def main():
             for i in range(BRIGHT_MIN, BRIGHT_MAX+1):
                 print(f"picture{i}")
                 filename = camera_snapshot(UID, suffix, i * 100)
-                storageUpload(filename, UID, bucket)
+                storageUpload(filename, bucket)
                 RTUpload(filename, UID, bucket, i)
 
-            # alarm
-            # wait for button input
+            # 
+            alarm()
+
+            # press any button
             modeSelect()
             # take 5pictures of opposite side
             suffix = "b" + suffix
             for i in range(BRIGHT_MIN, BRIGHT_MAX+1):
                 print(f"picture{i}")
                 filename = camera_snapshot(UID, suffix, i * 100)
-                storageUpload(filename, UID, bucket)
-                RTUpload(filename, UID, bucket, i)
+                storageUpload(filename,  bucket)
+                RTUpload(filename, UID, bucket, BRIGHT_MAX + i)
 
         if(MODE == ROTATECAMERA): 
             for i in range(10):
@@ -78,4 +79,5 @@ def main():
             storageUpload(filename, bucket)
 
 if __name__ == "__main__":
+    print("waiting for next input...")
     main()

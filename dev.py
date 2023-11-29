@@ -1,6 +1,25 @@
 import subprocess
 import ctypes
 import json
+import time
+
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(25, GPIO.OUT)
+scale = [262, 294, 330, 349, 392, 440, 494, 523]
+
+def alarm():
+        p = GPIO.PWM(25, 100)
+        p.start(100)
+        p.ChangeDutyCycle(90)
+
+        for i in range(8):
+                p.ChangeFrequency(scale[i])
+                time.sleep(0.3)
+        p.stop()
+        GPIO.cleanup()
+
+
 
 def setting() -> str:
     with open ("config.json", 'r') as f:
@@ -11,11 +30,17 @@ def setting() -> str:
 dev = ctypes.CDLL("/home/pilltong/pilltong/device.so")
 config = setting()
 
+# brightness corecction
+correction = 300
+
 def modeSelect() -> int:
-    return dev.userInput()
+    return int(input())
+    # return dev.userInput()
+
+
 
 def camera_snapshot(UID: str, suffix: str, bright: int) -> str:
-    dev.LEDON(bright);
+    dev.LEDON(bright + correction);
     prefix = f"device_image/{UID}/"
     suffix = suffix + f"{bright}" + ".jpeg"
     filename = "".join([prefix, suffix])
@@ -30,8 +55,12 @@ def endProc():
 
 
 def main():
-    UID = '8084fca6-b5e0-4a46-b395-4874104142cb'
-    print(camera_snapshot(UID))
+    tbright = 500
+    print("this is testing for camera_snapshot")
+    print(f"bright : {tbright}")
+    UID = "tester"
+    print(camera_snapshot(UID, "test", tbright))
+    
 
 if __name__ == "__main__":
     main()    

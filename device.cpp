@@ -6,28 +6,65 @@ using namespace std;
 
 // BCM NUMBER
 #define SERVO 13
+#define BUZZER 25
 #define LEDANALOG 18
 #define ENDBUTTON 20
 #define CAMBUTTON 21
 #define TESTBUTTON 16
 
+#define c3 7692 // 130 Hz
+#define d3 6802 // 147 Hz
+#define e3 6060 // 165 Hz
+#define f3 5714 // 175 Hz
+#define g3 5102 // 196 Hz
+#define a3 4545 // 220 Hz
+#define b3 4048 // 247 Hz
+#define c4 3830 // 261 Hz
+#define d4 3400 // 294 Hz
+#define e4 3038 // 329 Hz
+#define f4 2864 // 349 Hz
+#define g4 2550 // 392 Hz
+#define a4 2272 // 440 Hz
+#define b4 2028 // 493 Hz
+#define c5 1912 // 523 Hz
+
+const int melody[] = {261, 294, 329, 349, 392, 440, 493, 523};
+
+const long duration = 200000;
+const long pause = 10;
+
+
 extern "C"
 {
     int userInput() {
+        int state[3];
+        int old_state[3];
+        
         if (wiringPiSetupGpio() < 0) {
             cout << "Unable to setup wiring pi";
             return 1;
         }
+        
+        pinMode(ENDBUTTON, INPUT);
+        pinMode(CAMBUTTON, INPUT);
+        pinMode(TESTBUTTON, INPUT);
+
         while (TRUE) {
-            if (digitalRead(16)) {
+            state[0] = digitalRead(16);
+            state[1] = digitalRead(20);
+            state[2] = digitalRead(21);
+            if ((state[0] == HIGH) && (old_state[0] == LOW)) {
                 return 0;
             }
-            if (digitalRead(20)) {
+            else if ((state[1] == HIGH) && (old_state[1] == LOW)) {
                 return 1;
             }
-            if (digitalRead(21)) {
+            else if ((state[2] == HIGH) && (old_state[2] == LOW)) {
                 return 2;
             }
+            old_state[0] = state[0];
+            old_state[1] = state[1];
+            old_state[2] = state[2];
         }
     }
 
@@ -37,7 +74,7 @@ extern "C"
             return 1;
         }
         pinMode(LEDANALOG, PWM_OUTPUT);
-        digitalWrite(LEDANALOG, bright);
+        pwmWrite(LEDANALOG, bright);
         return 0;
     }
 
@@ -70,6 +107,25 @@ extern "C"
     
     // functions for testing
 
+    int buzzer() {
+        wiringPiSetupGpio();
+
+        pinMode(BUZZER, OUTPUT);
+        long elapsed_time = 0;
+        int tone_ = c4;
+        for(int i = 0; i < 16; ++i){
+            tone_ = melody[i];
+            while(1){
+                tone_ = (tone_+1) % 16;
+                digitalWrite(BUZZER,HIGH);
+                delayMicroseconds(tone_ / 2);
+                digitalWrite(BUZZER,LOW);
+                delayMicroseconds(tone_ / 2);
+            }
+        }     
+        return 0;
+    }
+
     int pwmlight() {
         int sel = 1;
         wiringPiSetupGpio();
@@ -83,23 +139,7 @@ extern "C"
         return 0;
     }
     
-    int buttonTest() {
-        wiringPiSetupGpio();
-        pinMode(17, OUTPUT);
-        pinMode(20, INPUT);
-        pinMode(21, INPUT);
-        pinMode(16, INPUT);
 
-        while (true) {
-            if (digitalRead(20) || digitalRead(21) || digitalRead(16)) {
-                digitalWrite(17, HIGH);
-            }
-            else {
-                digitalWrite(17, LOW);
-            }
-
-        }
-    }
 
     int servo() {
         int sel = 1;
