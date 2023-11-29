@@ -7,6 +7,7 @@ using namespace std;
 // BCM NUMBER
 #define SERVO 13
 #define BUZZER 25
+#define LED1 17
 #define LEDANALOG 18
 #define ENDBUTTON 20
 #define CAMBUTTON 21
@@ -36,77 +37,43 @@ const long pause = 10;
 
 extern "C"
 {
-    int userInput() {
-        int state[3];
-        int old_state[3];
-        
+    void setup() {
         if (wiringPiSetupGpio() < 0) {
-            cout << "Unable to setup wiring pi";
-            return 1;
+            cout << "Unable to setup wiringPi";
+            return;
         }
-        
         pinMode(ENDBUTTON, INPUT);
         pinMode(CAMBUTTON, INPUT);
         pinMode(TESTBUTTON, INPUT);
 
-        while (TRUE) {
-            state[0] = digitalRead(16);
-            state[1] = digitalRead(20);
-            state[2] = digitalRead(21);
-            if ((state[0] == HIGH) && (old_state[0] == LOW)) {
-                return 0;
-            }
-            else if ((state[1] == HIGH) && (old_state[1] == LOW)) {
-                return 1;
-            }
-            else if ((state[2] == HIGH) && (old_state[2] == LOW)) {
-                return 2;
-            }
-            old_state[0] = state[0];
-            old_state[1] = state[1];
-            old_state[2] = state[2];
-        }
+        pinMode(LED1, OUTPUT);
+        pinMode(LEDANALOG, OUTPUT);
+        pinMode(SERVO, OUTPUT);
+        pinMode(BUZZER, OUTPUT);
+
+        softPwmCreate(SERVO, 0, 200);
     }
 
-    int LEDON(int bright) {
-        if (wiringPiSetupGpio() < 0) {
-            cout << "Unable to setup wiring pi";
-            return 1;
-        }
+    void LEDON(int bright) {
         pinMode(LEDANALOG, PWM_OUTPUT);
         pwmWrite(LEDANALOG, bright);
-        return 0;
     }
 
-
-    int LEDOFF() {
-        if (wiringPiSetupGpio() < 0) {
-            cout << "Unable to setup wiring pi";
-            return 1;
-        }
+    void LEDOFF() {
         pinMode(LEDANALOG, OUTPUT);
         digitalWrite(LEDANALOG, LOW);
-        return 0;
     }
 
-    int turn() {
-        //sg-90 360 degree servo motor
-        wiringPiSetupGpio();
-        pinMode(SERVO, OUTPUT);
-        softPwmCreate(SERVO, 0, 200);
-
+    //sg-90 360 degree servo motor
+    void turn() {
         // approximately 15 degree rotate
         softPwmWrite(SERVO, 13);    
-        delay(170);
+        delay(200);
 
         // stop
         softPwmWrite(SERVO, 14);
-
-        return 0;
     }           
     
-    // functions for testing
-
     int buzzer() {
         wiringPiSetupGpio();
 
@@ -125,33 +92,49 @@ extern "C"
         }     
         return 0;
     }
-
-    int pwmlight() {
-        int sel = 1;
-        wiringPiSetupGpio();
-
-        pinMode(LEDANALOG, PWM_OUTPUT);
-
-        while (sel != 0) {
-            cin >> sel;
-            pwmWrite(LEDANALOG, sel);
-        }
-        return 0;
-    }
     
-
-
-    int servo() {
-        int sel = 1;
-        wiringPiSetupGpio();
-        pinMode(LEDANALOG, OUTPUT);
-        softPwmCreate(LEDANALOG, 0, 200);
-        while (sel != 0) {
-            cin >> sel;
-            softPwmWrite(LEDANALOG, 13);    // approximately 15 degree rotate
-            delay(170);
-            softPwmWrite(LEDANALOG, 14);    // stop
+    bool button1(int& val, int& old_val) {
+        val = digitalRead(TESTBUTTON);
+        if ((val == HIGH) && (old_val == LOW)) {
+            return true;
         }
-        return 0;
-    }            
+        old_val = val;
+    }
+
+    bool button2(int& val, int& old_val) {
+        val = digitalRead(ENDBUTTON);
+        if ((val == HIGH) && (old_val == LOW)) {
+            return true;
+        }
+        old_val = val;
+    }
+
+    bool button3(int& val, int& old_val) {
+        val = digitalRead(CAMBUTTON);
+        if ((val == HIGH) && (old_val == LOW)) {
+            return true;
+        }
+        old_val = val;
+        return false;
+    }    
+
+    // main
+    // cant use global variable in extern dynamic alloc problem
+    int main() {
+        int val1(LOW), val2(LOW), val3(LOW);
+        int old_val1(LOW), old_val2(LOW), old_val3(LOW);
+        setup();
+        // loop
+        while (1) {
+            if(button1(val1, old_val1)){
+                return 0;
+            };
+            if(button2(val2, old_val2)){
+                return 1;
+            };
+            if(button3(val3, old_val3)){
+                return 2;
+            };
+        }
+    }       
 }

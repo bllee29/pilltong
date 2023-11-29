@@ -4,13 +4,15 @@ from firebase_admin import db
 from firebase_admin import credentials
 from firebase_admin import storage
 
-# import camera
+# import camera functions
 from dev import *
 import dev
+
+# import upload functions
 from upload import *
 
+# import libraries
 import datetime
-
 
 # setup
 UID = dev.config['UID']
@@ -28,6 +30,7 @@ END = 0
 CAMERA = 1
 ROTATECAMERA = 2
 TEST = 22
+
 BRIGHT_MAX = 5
 BRIGHT_MIN = 1
 
