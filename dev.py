@@ -1,44 +1,53 @@
 import subprocess
 import ctypes
-import json
 import time
 
+##########################################################################
 # temporary alarm function
 import RPi.GPIO as GPIO
+
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(25, GPIO.OUT)
+GPIO.setup(22, GPIO.OUT)
 scale = [262, 294, 330, 349, 392, 440, 494, 523]
 
 def alarm():
-        p = GPIO.PWM(25, 100)
-        p.start(100)
-        p.ChangeDutyCycle(90)
-        # do re mi fa sol la si do
-        for i in range(8):
-                p.ChangeFrequency(scale[i])
-                time.sleep(0.3)
-        p.stop()
-        GPIO.cleanup()
+    try:
+            p = GPIO.PWM(22, 100)
+            p.start(100)
+            p.ChangeDutyCycle(90)
 
-# def setting() -> str:
-#     with open ("config.json", 'r') as f:
-#         config = json.load(f)
-#     return config
+            for i in range(8):
+                    p.ChangeFrequency(scale[i])
+                    time.sleep(0.1)
+            p.stop()
+
+    finally:
+            GPIO.cleanup()
+##########################################################################
+
+
+# brightness corecction
+correction = 200
 
 # use absolute path for using in /etc/rc.local
 dev = ctypes.CDLL("/home/pilltong/pilltong/device.so")
-with open ("config.json", 'r') as f:
-    config = json.load(f)
 
-# brightness corecction
-correction = 300
+def ledInit() :
+    dev.STATE(1)
+    dev.LEDOFF()
+     
+def init():
+    dev.setup()
+
+def clean():
+    GPIO.cleanup()
 
 def modeSelect() -> int:
     # return int(input())
     return dev.main()
 
-def camera_snapshot(UID: str, suffix: str, bright: int) -> str:
-    dev.LEDON(bright + correction);
+def camera_snapshot(UID: str, suffix: str, bright: int, pin: int) -> str:
+    dev.LEDON(pin, bright + correction)
     prefix = f"device_image/{UID}/"
     suffix = suffix + f"{bright}" + ".jpeg"
     filename = "".join([prefix, suffix])
@@ -50,7 +59,6 @@ def turn():
 
 def endProc():
     subprocess.call("sudo shutdown now {}", shell=True)
-
 
 def main():
     tbright = 500
