@@ -82,12 +82,6 @@ extern "C"
         }
         else if (num == 1) {
             pwmWrite(LED1, LOW);
-        }
-        else if (num == 2) {
-            pwmWrite(LED3, LOW);
-        }
-        else {
-            digitalWrite(STATE_LED, LOW);
             pwmWrite(LED1, LOW);
             pwmWrite(LED3, LOW);
         }

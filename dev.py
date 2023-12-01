@@ -6,11 +6,11 @@ import time
 # temporary alarm function
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(22, GPIO.OUT)
-scale = [262, 294, 330, 349, 392, 440, 494, 523]
 
 def alarm():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(22, GPIO.OUT)
+    scale = [262, 294, 330, 349, 392, 440, 494, 523]
     try:
             p = GPIO.PWM(22, 100)
             p.start(100)
@@ -34,7 +34,7 @@ dev = ctypes.CDLL("/home/pilltong/pilltong/device.so")
 
 def ledInit() :
     dev.STATE(1)
-    dev.LEDOFF()
+    dev.LEDOFF(1)
      
 def init():
     dev.setup()
